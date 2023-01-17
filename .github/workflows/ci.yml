@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: ['*']
+  pull_request:
+    branches: ['*']
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        pg: [12, 13, 14, 15]
+        check_code: ["false", "clang"]
+
+    name: Test clickhouse_fdw
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build an image with the source code
+        run: docker-compose -f docker-compose.yml  build --build-arg CHECK_CODE=${{ matrix.check_code }} --build-arg PG_VERSION=${{ matrix.pg }} tests
+      - name: Run the tests
+        run: docker-compose -f docker-compose.yml run tests

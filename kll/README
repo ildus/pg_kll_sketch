@@ -1,0 +1,5 @@
+kll sketch
+----------
+
+Library implements KLL sketch data structure (using C)
+http://arxiv.org/pdf/1603.05346v1.pdf

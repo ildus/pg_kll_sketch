@@ -1,0 +1,4 @@
+comment = 'Quantiles using KLL sketch data structure'
+default_version = '1.0'
+module_pathname = '$libdir/kll_sketch.so'
+relocatable = false

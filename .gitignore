@@ -1,0 +1,11 @@
+compile_commands.json
+.clangd
+.cache
+*.a
+*.o
+/build
+*.so
+/tmpdb
+.deps
+/test/log
+/test/results
