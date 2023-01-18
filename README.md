@@ -4,7 +4,7 @@ The extension provided as is, and could be not ready for the production.
 
 ## Usage
 
-Get the median:
+Get the approximation of median:
 
 ```sql
 SELECT kll_sketch_quantile(col, 0.5) FROM events; -- default k (1000)
