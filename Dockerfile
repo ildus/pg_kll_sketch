@@ -33,3 +33,4 @@ WORKDIR /pg/src
 RUN chmod -R go+rwX /pg/src
 USER postgres
 ENTRYPOINT PGDATA=${PGDATA} CHECK_CODE=${CHECK_CODE} bash run_tests.sh
+#ENTRYPOINT PGDATA=${PGDATA} CHECK_CODE=${CHECK_CODE} bash change_core_pattern.sh

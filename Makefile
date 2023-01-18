@@ -7,8 +7,8 @@ PG_USER = postgres
 REGRESS_OPTS := \
 	--load-extension=$(EXTENSION) \
 	--user=$(PG_USER) \
-	--inputdir=test \
-	--outputdir=test \
+	--inputdir=tests \
+	--outputdir=tests \
 	--temp-instance=${PWD}/tmpdb
 
 SRCS = quantile.c $(wildcard kll/*.c)

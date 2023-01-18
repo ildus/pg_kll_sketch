@@ -14,7 +14,7 @@ jobs:
         pg: [12, 13, 14, 15]
         check_code: ["false", "clang"]
 
-    name: Test clickhouse_fdw
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

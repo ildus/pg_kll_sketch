@@ -1,7 +1,10 @@
 CREATE TABLE intvals(val int, color text);
-
 -- Test empty table
 SELECT kll_sketch_quantile(val, 0.5) FROM intvals;
+ kll_sketch_quantile 
+---------------------
+                    
+(1 row)
 
 -- Integers with odd number of values
 INSERT INTO intvals VALUES
@@ -12,9 +15,23 @@ INSERT INTO intvals VALUES
        (2, 'd'),
        (-3, 'd'),
        (2, 'e');
-
 SELECT * FROM intvals ORDER BY val;
+ val | color 
+-----+-------
+  -3 | d
+   1 | a
+   2 | c
+   2 | e
+   2 | d
+   7 | c
+   9 | b
+(7 rows)
+
 SELECT kll_sketch_quantile(val, 0.5) FROM intvals;
+ kll_sketch_quantile 
+---------------------
+                   2
+(1 row)
 
 -- Integers with NULLs and even number of values
 INSERT INTO intvals VALUES
@@ -24,44 +41,95 @@ INSERT INTO intvals VALUES
        (NULL, 'b'),
        (7, 'c'),
        (0, 'd');
-
 SELECT * FROM intvals ORDER BY val;
+ val | color 
+-----+-------
+  -3 | d
+   0 | d
+   1 | a
+   2 | e
+   2 | d
+   2 | c
+   7 | c
+   7 | c
+   9 | b
+  99 | a
+     | a
+     | e
+     | b
+(13 rows)
+
 SELECT kll_sketch_quantile(val, 0.5) FROM intvals;
+ kll_sketch_quantile 
+---------------------
+                   2
+(1 row)
 
 -- Text values
 CREATE TABLE textvals(val text, color int);
-
 INSERT INTO textvals VALUES
        ('erik', 1),
        ('mat', 3),
        ('rob', 8),
        ('david', 9),
        ('lee', 2);
-
 SELECT * FROM textvals ORDER BY val;
+  val  | color 
+-------+-------
+ david |     9
+ erik  |     1
+ lee   |     2
+ mat   |     3
+ rob   |     8
+(5 rows)
+
 SELECT kll_sketch_quantile(val, 0.5) FROM textvals;
+ kll_sketch_quantile 
+---------------------
+ lee
+(1 row)
+
 SELECT kll_sketch_quantile(val, 0.5, 100) FROM textvals;
+ kll_sketch_quantile 
+---------------------
+ lee
+(1 row)
 
 -- Test large table with timestamps
 CREATE TABLE timestampvals (val timestamptz);
-
 INSERT INTO timestampvals(val)
 SELECT TIMESTAMP 'epoch' + (i * INTERVAL '1 second')
 FROM generate_series(0, 100000) as T(i);
-
 SELECT m::date as date, date_part('hour', m) as hour,
-    (date_part('minute', m) between 52 and 54) as betw52and54
+    (date_part('minute', m) between 51 and 54) as betw51and54
 FROM
     (SELECT kll_sketch_quantile(val, 0.5) as m FROM timestampvals) t;
+    date    | hour | betw51and54 
+------------+------+-------------
+ 01-01-1970 |   13 | t
+(1 row)
 
 set parallel_setup_cost = 1;
 set parallel_tuple_cost = 0.0001;
 set max_parallel_workers = 1;
 set force_parallel_mode = on;
-
 -- Test large table with texts
 CREATE TABLE textvals2 (val text);
 INSERT INTO textvals2 select md5(i::text) from generate_series(1, 100000) i;
 EXPLAIN (COSTS OFF) SELECT kll_sketch_quantile(val, 0.5) FROM textvals2;
+            QUERY PLAN             
+-----------------------------------
+ Gather
+   Workers Planned: 1
+   Single Copy: true
+   ->  Aggregate
+         ->  Seq Scan on textvals2
+(5 rows)
+
 SELECT (v ^@ '7f' or v ^@ '80') as true FROM
 	(SELECT kll_sketch_quantile(val, 0.5) as v FROM textvals2) t;
+ true 
+------
+ t
+(1 row)
+

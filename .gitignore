@@ -7,5 +7,6 @@ compile_commands.json
 *.so
 /tmpdb
 .deps
-/test/log
-/test/results
+/tests/log
+/tests/results
+*.diffs

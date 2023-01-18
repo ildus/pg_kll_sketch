@@ -3,7 +3,6 @@
 set -eux
 
 echo CHECK_CODE=$CHECK_CODE
-
 status=0
 
 # perform code analysis if necessary
